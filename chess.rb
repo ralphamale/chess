@@ -1,4 +1,5 @@
 ROWS = 8
+require 'debugger'
 
 class Board
 
@@ -13,17 +14,41 @@ class Board
     @board[row][col]
   end
 
+  def []=(pos,piece)
+    x,y = pos[0], pos[1]
+    @board[x][y] = piece
+  end
+
+  def display
+    @board.each do |row|
+      puts row.join(" ")
+    end
+  end
+
+  def in_check?(color)
+
+
+    # returns if player is in check
+  end
+   #
+
+  def move(start_pos, end_pos)
+
+  end
+
 
 
 end
 
 
 class Piece
-  attr_accessor :pos, :board
+  attr_accessor :pos, :board, :color #add team functionality
 
-  def initialize(pos)
+  def initialize(pos, board, color)
     @pos = pos
-    @board = Array.new(8) { Array.new(8) } #temp: for testing
+    @board = board
+    @color = color
+    @board[pos] = self
   end
 end
 
@@ -42,21 +67,33 @@ class SlidingPiece < Piece
   # end
 
   def moves
+    # possible_moves = []
+    # i = 1
+    # while i < ROWS
+    #   possible_moves += move_dirs.each do |(dx, dy)|
+    #     # break if same color piece
+    #     # break if opposing color piece
+    #
+    #     [pos[0] + (i*dx), pos[1] + (i*dy)]
+    #   end
+    #
+    #   i += 1
+    # end
     possible_moves = []
-    i = 1
-    while i < ROWS
-      possible_moves += move_dirs.map do |(dx, dy)|
-        [pos[0] + (i*dx), pos[1] + (i*dy)]
-      end
+    move_dirs.each do |(dx, dy)|
+      (1).upto(7) do |i|
+        #debugger
+        current_pos = [pos[0] + (i*dx), pos[1] + (i*dy)]
 
-      i += 1
+        break unless current_pos.all? { |coord| coord.between?(0,ROWS-1)}
+        break if (@board[current_pos] && @board[current_pos].color == self.color)
+
+        possible_moves << current_pos
+
+        break if (@board[current_pos] && @board[current_pos].color != self.color)
+      end
     end
 
-    possible_moves.select do |row, col|
-      [row, col].all? do |coord|
-        coord.between?(0, ROWS-1)
-      end
-    end
   end
 
       #adjacent_coords.map { |pos| @board[pos] } <- fr/ minesweep
@@ -87,6 +124,13 @@ end
 class SteppingPiece < Piece
   def moves
 
+    #
+    # break if (@board[current_pos] && @board[current_pos].color == self.color)
+    #
+    # possible_moves << current_pos
+    #
+    # break if (@board[current_pos] && @board[current_pos].color != self.color)
+
     possible_moves = []
       possible_moves += move_dirs.map do |(dx, dy)|
         [pos[0] + dx, pos[1] + dy]
@@ -94,6 +138,10 @@ class SteppingPiece < Piece
       [row, col].all? do |coord|
         coord.between?(0, ROWS-1)
       end
+    end
+
+    possible_moves.delete_if do |current_pos|
+      @board[current_pos] && @board[current_pos].color == self.color
     end
 
 
