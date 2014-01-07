@@ -3,10 +3,39 @@ require 'debugger'
 
 class Board
 
+
   attr_accessor :board
 
   def initialize
     @board = Array.new(ROWS) { Array.new(ROWS) }
+    #generate_board
+  end
+
+  def dup
+    duped_board = Board.new
+      self.board.flatten.each do |piece|
+        next if piece.nil?
+
+        piece_class = piece.class
+        piece_class.new(piece.pos.dup, duped_board, piece.color)
+      end
+
+      duped_board
+
+  end
+
+  def generate_board
+
+    layout_array = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+    layout_array.each_with_index do |piece, i|
+      piece.new([0,i], self, :b)
+      # Pawn.new([1,i],self,:b)
+#       Pawn.new(6,i),self,:w)
+      piece.new([7,i], self, :w)
+    end
+
+
   end
 
   def [](pos)
@@ -26,13 +55,42 @@ class Board
   end
 
   def in_check?(color)
+#    debugger
+    flattened_board = @board.flatten
 
+    king_pos = nil
+    opponents = []
 
-    # returns if player is in check
+    flattened_board.each_with_index do |piece, i|
+      next if piece.nil?
+      king_pos = flattened_board[i].pos if piece.class == King && piece.color == color
+      opponents << flattened_board[i] if piece.color != color
+    end
+
+ #   debugger
+
+    opponents.any? do |opponent_piece|
+      opponent_piece.moves.include?(king_pos)
+    end
   end
-   #
 
   def move(start_pos, end_pos)
+
+    piece_to_move = self[start_pos]
+
+    if piece_to_move.nil?
+      raise ArgumentError.new "No piece at start position"
+    end
+
+    unless piece_to_move.moves.include?(end_pos)
+      raise ArgumentError.new "Illegal end position"
+    end
+
+
+    self[end_pos], self[start_pos] = piece_to_move, nil
+
+    piece_to_move.pos = end_pos
+    # raise
 
   end
 
@@ -49,6 +107,13 @@ class Piece
     @board = board
     @color = color
     @board[pos] = self
+  end
+
+  def move_into_check?(end_pos)
+    duped_board = @board.dup
+    duped_board.move(self.pos, end_pos)
+    duped_board.in_check?(@color)
+
   end
 end
 
@@ -93,6 +158,7 @@ class SlidingPiece < Piece
         break if (@board[current_pos] && @board[current_pos].color != self.color)
       end
     end
+    possible_moves
 
   end
 
@@ -123,13 +189,6 @@ end
 
 class SteppingPiece < Piece
   def moves
-
-    #
-    # break if (@board[current_pos] && @board[current_pos].color == self.color)
-    #
-    # possible_moves << current_pos
-    #
-    # break if (@board[current_pos] && @board[current_pos].color != self.color)
 
     possible_moves = []
       possible_moves += move_dirs.map do |(dx, dy)|
@@ -163,4 +222,12 @@ end
 
 
 class Pawn < Piece
+
+  def move_dirs
+    if self.color == :w
+      return [0,1]
+    else
+      return [0,-1]
+    end
+  end
 end

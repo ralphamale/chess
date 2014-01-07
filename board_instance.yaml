@@ -1,0 +1,86 @@
+--- &70200391119900 !ruby/object:Board
+board:
+- - 
+  - 
+  - 
+  - !ruby/object:Rook
+    pos:
+    - 0
+    - 3
+    board: *70200391119900
+    color: :b
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - !ruby/object:Rook
+    pos:
+    - 3
+    - 3
+    board: *70200391119900
+    color: :w
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - !ruby/object:King
+    pos:
+    - 4
+    - 3
+    board: *70200391119900
+    color: :w
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - !ruby/object:Queen
+    pos:
+    - 5
+    - 6
+    board: *70200391119900
+    color: :w
+  - 
+- - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+- - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
