@@ -5,7 +5,7 @@ class Board
 
   def initialize
     @board = Array.new(ROWS) { Array.new(ROWS) }
-    #generate_board
+    generate_board
   end
 
   def dup
@@ -27,8 +27,8 @@ class Board
 
     layout_array.each_with_index do |piece, i|
       piece.new([0,i], self, :b)
-      # Pawn.new([1,i],self,:b)
-#       Pawn.new(6,i),self,:w)
+      Pawn.new([1,i],self,:b)
+      Pawn.new([6,i],self,:w)
       piece.new([7,i], self, :w)
     end
 
@@ -46,9 +46,11 @@ class Board
   end
 
   def display
-    @board.each do |row|
-      puts row.join(" ")
-    end
+    @board.map do |row|
+      row.map do |piece|
+        piece.nil? ? " " : piece.display_token
+      end.join(" | ")
+    end.join("\n")
   end
 
   def in_check?(color)
@@ -69,7 +71,7 @@ class Board
   end
 
   def checkmate?(color)
-    debugger
+
     in_check?(color) && no_valid_moves?(color)
   end
 
@@ -90,7 +92,7 @@ class Board
   def move!(start_pos, end_pos)
     self[end_pos], self[start_pos] = self[start_pos], nil
 
-    self[end_pos].pos = end_pos
+#    self[end_pos].pos = end_pos
 
   end
 

@@ -1,7 +1,7 @@
 
 
 class Piece
-  attr_accessor :pos, :board, :color #add team functionality
+  attr_accessor :pos, :board, :color, :display_token
 
   def initialize(pos, board, color)
     @pos = pos
@@ -32,7 +32,7 @@ class SlidingPiece < Piece
     possible_moves = []
     move_dirs.each do |(dx, dy)|
       (1).upto(7) do |i|
-        #debugger
+
         current_pos = [pos[0] + (i*dx), pos[1] + (i*dy)]
 
         break unless current_pos.all? { |coord| coord.between?(0,ROWS-1)}
@@ -50,18 +50,31 @@ class SlidingPiece < Piece
 end
 
 class Bishop < SlidingPiece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2657".encode('utf-8') : "\u265d".encode('utf-8')
+  end
+
   def move_dirs
     [[1,1], [1, -1], [-1, -1], [-1, 1]]
   end
 end
 
 class Rook < SlidingPiece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2656".encode('utf-8') : "\u265c".encode('utf-8')
+  end
   def move_dirs
     [[1,0], [-1, 0], [0, -1], [0, 1]]
   end
 end
 
 class Queen < SlidingPiece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2655".encode('utf-8') : "\u265b".encode('utf-8')
+  end
 
   def move_dirs
     [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1],
@@ -90,12 +103,22 @@ class SteppingPiece < Piece
 end
 
 class Knight < SteppingPiece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2658".encode('utf-8') : "\u265e".encode('utf-8')
+  end
+
+
   def move_dirs
     [[1,2], [2,1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]]
   end
 end
 
 class King < SteppingPiece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2654".encode('utf-8') : "\u265a".encode('utf-8')
+  end
   def move_dirs
     [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1],
     [1, -1], [1, 0], [1, 1]]
@@ -104,14 +127,19 @@ end
 
 
 class Pawn < Piece
+  def initialize(pos, board, color)
+    super(pos, board, color)
+    @display_token = (color == :w) ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
+  end
+
 
   def moves
     dx, dy = move_dirs
 
     possible_moves = [pos[0], pos[1] + dy]
 
-    d_left = @board[pos[0] - 1, pos[1] + dy]
-    d_right = @board[pos[0] + 1, pos[1] + dy]
+    d_left = @board[[pos[0] - 1, pos[1] + dy]]
+    d_right = @board[[pos[0] + 1, pos[1] + dy]]
 
     possible_moves << d_left if !d_left.nil? && d_left.color != self.color
     possible_moves << d_right if !d_right.nil? && d_right.color != self.color
