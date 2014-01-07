@@ -1,5 +1,23 @@
 ROWS = 8
 
+class Board
+
+  attr_accessor :board
+
+  def initialize
+    @board = Array.new(ROWS) { Array.new(ROWS) }
+  end
+
+  def [](pos)
+    row, col = pos
+    @board[row][col]
+  end
+
+
+
+end
+
+
 class Piece
   attr_accessor :pos, :board
 
