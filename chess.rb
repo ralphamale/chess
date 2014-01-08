@@ -1,6 +1,5 @@
 require './piece.rb'
 require './board.rb'
-require 'debugger'
 require 'colorize'
 
 class Game
@@ -19,20 +18,15 @@ class Game
 
   def play
     loop do
-
       display_board
 
         begin
           current_player = self.players[self.turn]
           start_pos, end_pos = current_player.play_turn(@board)
           @board.move(start_pos, end_pos)
-
         rescue ArgumentError => e # ArgumentError lives in @board.move
-
           puts "Error was: #{e.message}"
           puts "Please try again"
-
-
           retry
         end
         @turn = ((self.turn == :w) ? :b : :w)
@@ -44,7 +38,6 @@ class Game
     display_board
     puts "#{self.players[self.turn].name} loses!"
   end
-
 end
 
 
@@ -65,7 +58,6 @@ class HumanPlayer
 
     board.mid_move_display(piece_origin)
 
-    # message stating which piece you chose from what coordinates
     puts "You chose your piece at #{start_pos.join("").upcase}."
     puts
     puts "Where do you want to move?"
@@ -78,16 +70,13 @@ class HumanPlayer
   def convert_entry(pos)
     [8-Integer(pos[1]),pos[0].downcase.ord-97]
   end
-
 end
 
 
 if $PROGRAM_NAME == __FILE__
-
   player1 = HumanPlayer.new("Alex", :w)
   player2 = HumanPlayer.new("Ralph", :b)
 
   g = Game.new(player1, player2)
   g.play
-
 end

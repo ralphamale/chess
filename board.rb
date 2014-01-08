@@ -40,8 +40,6 @@ class Board
     @board[x][y] = piece
   end
 
-
-  # incorporate colorize/unicode
   def display
     @board.each_with_index do |row, row_index|
       row_index.even? ? switch = true : switch = false
@@ -80,8 +78,6 @@ class Board
     nil
   end
 
-
-
   def in_check?(color)
     flattened_board = @board.flatten
 
@@ -110,8 +106,11 @@ class Board
     end
   end
 
+
+
   def no_valid_moves?(color)
-    flattened_board = @board.flatten
+
+flattened_board = @board.flatten
 
     player_pieces = flattened_board.select do |current_piece|
        !current_piece.nil? && current_piece.color == color
