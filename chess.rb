@@ -2,13 +2,14 @@ require './piece.rb'
 require './board.rb'
 require 'debugger'
 class Game
+  attr_reader :players, :turn
 
-  def initialize
+  def initialize(player1, player2)
     @board = Board.new
-    @player1 = HumanPlayer.new(:w)
-    @player2 = HumanPlayer.new(:b)
+    @board.generate_board
+    @players = { w: player1, b: player2 }
+    @turn = :w
   end
-
 
   def display_board
     puts @board.display
@@ -19,15 +20,18 @@ class Game
     loop do
       display_board
 
-      start_pos, end_pos = @player1.play_turn
-
+      current_player = self.players[self.turn]
+      start_pos, end_pos = current_player.play_turn
       @board.move(start_pos, end_pos)
+      debugger if @board[[4,7]].is_a?(Queen)
 
-      display_board
-      start_pos, end_pos = @player2.play_turn
-      @board.move(start_pos, end_pos)
+
+      @turn = ((self.turn == :w) ? :b : :w)
+
+      break if @board.checkmate?(@turn)
     end
 
+    puts "#{self.players[self.turn]} loses!"
   end
 
 end
@@ -52,5 +56,8 @@ class HumanPlayer
 
 end
 
-g = Game.new
+player1 = HumanPlayer.new(:w)
+player2 = HumanPlayer.new(:b)
+
+g = Game.new(player1, player2)
 g.play

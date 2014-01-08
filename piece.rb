@@ -12,14 +12,14 @@ class Piece
 
   def move_into_check?(end_pos)
     duped_board = @board.dup
-    duped_board.move!(self.pos, end_pos)
-    duped_board.in_check?(@color)
+    duped_board.move!(self.pos.dup, end_pos.dup)
 
+    duped_board.in_check?(@color)
   end
 
   def valid_moves
-    moves.delete_if do |move| # move = position
-      move_into_check?(move)  # filters out dumb moves
+    moves.delete_if do |move|
+      move_into_check?(move)
     end
   end
 
@@ -28,12 +28,12 @@ end
 class SlidingPiece < Piece
 
   def moves
-
     possible_moves = []
+
     move_dirs.each do |(dx, dy)|
       (1).upto(7) do |i|
 
-        current_pos = [pos[0] + (i*dx), pos[1] + (i*dy)]
+        current_pos = [pos[0] + (i * dx), pos[1] + (i * dy)]
 
         break unless current_pos.all? { |coord| coord.between?(0,ROWS-1)}
         break if (@board[current_pos] && @board[current_pos].color == self.color)
@@ -56,7 +56,7 @@ class Bishop < SlidingPiece
   end
 
   def move_dirs
-    [[1,1], [1, -1], [-1, -1], [-1, 1]]
+    [[1, 1], [1, -1], [-1, -1], [-1, 1]]
   end
 end
 
@@ -66,7 +66,7 @@ class Rook < SlidingPiece
     @display_token = (color == :w) ? "\u2656".encode('utf-8') : "\u265c".encode('utf-8')
   end
   def move_dirs
-    [[1,0], [-1, 0], [0, -1], [0, 1]]
+    [[1, 0], [-1, 0], [0, -1], [0, 1]]
   end
 end
 
@@ -84,7 +84,6 @@ end
 
 class SteppingPiece < Piece
   def moves
-
     possible_moves = []
       possible_moves += move_dirs.map do |(dx, dy)|
         [pos[0] + dx, pos[1] + dy]
@@ -98,11 +97,11 @@ class SteppingPiece < Piece
       @board[current_pos] && @board[current_pos].color == self.color
     end
 
-
   end
 end
 
 class Knight < SteppingPiece
+
   def initialize(pos, board, color)
     super(pos, board, color)
     @display_token = (color == :w) ? "\u2658".encode('utf-8') : "\u265e".encode('utf-8')
@@ -110,15 +109,17 @@ class Knight < SteppingPiece
 
 
   def move_dirs
-    [[1,2], [2,1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]]
+    [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]]
   end
 end
 
 class King < SteppingPiece
+
   def initialize(pos, board, color)
     super(pos, board, color)
     @display_token = (color == :w) ? "\u2654".encode('utf-8') : "\u265a".encode('utf-8')
   end
+
   def move_dirs
     [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1],
     [1, -1], [1, 0], [1, 1]]
@@ -127,31 +128,37 @@ end
 
 
 class Pawn < Piece
+  attr_accessor :moved
   def initialize(pos, board, color)
     super(pos, board, color)
     @display_token = (color == :w) ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
+    @moved = false
   end
 
+  def moved?
+    @moved
+  end
 
   def moves
     dx, dy = move_dirs
+    multiplier = (moved? ? 1 : 2)
+    possible_moves = []
 
-    possible_moves = [pos[0], pos[1] + dy]
+    1.upto(multiplier) do |i|
+      maybe_move = [pos[0] + (i * dx), pos[1] + (i * dy)]
+      possible_moves << maybe_move if @board[maybe_move].nil?
+    end
 
-    d_left = @board[[pos[0] - 1, pos[1] + dy]]
-    d_right = @board[[pos[0] + 1, pos[1] + dy]]
-
-    possible_moves << d_left if !d_left.nil? && d_left.color != self.color
-    possible_moves << d_right if !d_right.nil? && d_right.color != self.color
+    [-1, 1].each do |j|
+      diagonal_case = @board[[pos[0] + dx, pos[1] + j]]
+      possible_moves << diagonal_case.pos if !diagonal_case.nil? && diagonal_case.color != self.color
+    end
 
     possible_moves
   end
 
   def move_dirs
-    if self.color == :w
-      return [0,1]
-    else
-      return [0,-1]
-    end
+
+    return (self.color == :w ? [-1, 0] : [1, 0])
   end
 end

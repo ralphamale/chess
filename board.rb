@@ -5,11 +5,12 @@ class Board
 
   def initialize
     @board = Array.new(ROWS) { Array.new(ROWS) }
-    generate_board
+
   end
 
   def dup
     duped_board = Board.new
+
       self.board.flatten.each do |piece|
         next if piece.nil?
 
@@ -17,23 +18,36 @@ class Board
         piece_class.new(piece.pos.dup, duped_board, piece.color)
       end
 
-      duped_board
-
+    duped_board
   end
 
   def generate_board
-
     layout_array = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
     layout_array.each_with_index do |piece, i|
-      piece.new([0,i], self, :b)
-      Pawn.new([1,i],self,:b)
-      Pawn.new([6,i],self,:w)
-      piece.new([7,i], self, :w)
+      piece.new([0, i], self, :b)
+      Pawn.new([1, i], self, :b)
+      Pawn.new([6, i], self, :w)
+      piece.new([7, i], self, :w)
+    end
+  end
+
+  def countPiecesOnBoard
+    flattened_board = @board.flatten
+    whites = []
+    blacks = []
+
+    flattened_board.each_with_index do |piece, i|
+      next if piece.nil?      #
+      whites << flattened_board[i] if piece.color == :w
+      blacks << flattened_board[i] if piece.color != :b
     end
 
+    puts "Whites: #{whites.count}"
+    puts "Blacks: #{blacks.count}"
 
   end
+
 
   def [](pos)
     row, col = pos
@@ -41,7 +55,7 @@ class Board
   end
 
   def []=(pos,piece)
-    x,y = pos[0], pos[1]
+    x, y = pos[0], pos[1]
     @board[x][y] = piece
   end
 
@@ -56,8 +70,13 @@ class Board
   def in_check?(color)
     flattened_board = @board.flatten
 
+    puts "IN_CHECK:"
+    puts @board.display
+
+
     king_pos = nil
     opponents = []
+
 
     flattened_board.each_with_index do |piece, i|
       next if piece.nil?
@@ -71,12 +90,18 @@ class Board
   end
 
   def checkmate?(color)
+    val = in_check?(color)
+    tal = no_valid_moves?(color)
+    val && tal
+  end
 
-    in_check?(color) && no_valid_moves?(color)
+  def tie?
+    @board.flatten.all? do |piece|
+      piece.is_a?(King)
+    end
   end
 
   def no_valid_moves?(color)
-
     flattened_board = @board.flatten
 
     player_pieces = flattened_board.select do |current_piece|
@@ -84,20 +109,20 @@ class Board
     end
 
     possible_moves = []
-    player_pieces.each {|piece| possible_moves += piece.valid_moves}
+    player_pieces.each do |piece|
+      possible_moves += piece.valid_moves
+    end
 
     possible_moves.empty?
   end
 
-  def move!(start_pos, end_pos)
+  def move!(start_pos, end_pos) #DO NOT TOUCH!!!
+    piece_to_move = self[start_pos]
     self[end_pos], self[start_pos] = self[start_pos], nil
-
-#    self[end_pos].pos = end_pos
-
+    piece_to_move.pos = end_pos
   end
 
   def move(start_pos, end_pos)
-
     piece_to_move = self[start_pos]
 
     if piece_to_move.nil?
@@ -112,9 +137,9 @@ class Board
       raise ArgumentError.new "Illegal end position"
     end
 
+    piece_to_move.moved = true if piece_to_move.class == Pawn && !piece_to_move.moved?
 
     self[end_pos], self[start_pos] = piece_to_move, nil
-
     piece_to_move.pos = end_pos
 
   end
