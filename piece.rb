@@ -1,5 +1,3 @@
-
-
 class Piece
   attr_accessor :pos, :board, :color, :display_token
 
@@ -18,15 +16,12 @@ class Piece
   end
 
   def valid_moves
-    moves.delete_if do |move|
-      move_into_check?(move)
-    end
+    moves.delete_if { |move| move_into_check?(move) }
   end
 
 end
 
 class SlidingPiece < Piece
-
   def moves
     possible_moves = []
 
@@ -44,9 +39,7 @@ class SlidingPiece < Piece
       end
     end
     possible_moves
-
   end
-
 end
 
 class Bishop < SlidingPiece
@@ -89,7 +82,7 @@ class SteppingPiece < Piece
         [pos[0] + dx, pos[1] + dy]
       end.select do |row, col|
       [row, col].all? do |coord|
-        coord.between?(0, ROWS-1)
+        coord.between?(0, ROWS - 1)
       end
     end
 
@@ -126,9 +119,9 @@ class King < SteppingPiece
   end
 end
 
-
 class Pawn < Piece
   attr_accessor :moved
+
   def initialize(pos, board, color)
     super(pos, board, color)
     @display_token = (color == :w) ? "\u2659".encode('utf-8') : "\u265f".encode('utf-8')
@@ -158,7 +151,6 @@ class Pawn < Piece
   end
 
   def move_dirs
-
     return (self.color == :w ? [-1, 0] : [1, 0])
   end
 end

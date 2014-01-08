@@ -5,12 +5,10 @@ class Board
 
   def initialize
     @board = Array.new(ROWS) { Array.new(ROWS) }
-
   end
 
   def dup
     duped_board = Board.new
-
       self.board.flatten.each do |piece|
         next if piece.nil?
 
@@ -32,21 +30,18 @@ class Board
     end
   end
 
-  def countPiecesOnBoard
-    flattened_board = @board.flatten
-    whites = []
-    blacks = []
-
-    flattened_board.each_with_index do |piece, i|
-      next if piece.nil?      #
-      whites << flattened_board[i] if piece.color == :w
-      blacks << flattened_board[i] if piece.color != :b
-    end
-
-    puts "Whites: #{whites.count}"
-    puts "Blacks: #{blacks.count}"
-
-  end
+  # Helper method Ralph made last night
+  # def countPiecesOnBoard
+  #   flattened_board = @board.flatten
+  #   whites = []
+  #   blacks = []
+  #
+  #   flattened_board.each_with_index do |piece, i|
+  #     next if piece.nil?      #
+  #     whites << flattened_board[i] if piece.color == :w
+  #     blacks << flattened_board[i] if piece.color != :b
+  #   end
+  # end
 
 
   def [](pos)
@@ -59,6 +54,8 @@ class Board
     @board[x][y] = piece
   end
 
+
+  # incorporate colorize/unicode
   def display
     @board.map do |row|
       row.map do |piece|
@@ -70,16 +67,12 @@ class Board
   def in_check?(color)
     flattened_board = @board.flatten
 
-    puts "IN_CHECK:"
-    puts @board.display
-
-
     king_pos = nil
     opponents = []
 
-
     flattened_board.each_with_index do |piece, i|
       next if piece.nil?
+
       king_pos = flattened_board[i].pos if piece.class == King && piece.color == color
       opponents << flattened_board[i] if piece.color != color
     end
@@ -90,9 +83,7 @@ class Board
   end
 
   def checkmate?(color)
-    val = in_check?(color)
-    tal = no_valid_moves?(color)
-    val && tal
+    in_check?(color) && no_valid_moves?(color)
   end
 
   def tie?
@@ -141,7 +132,6 @@ class Board
 
     self[end_pos], self[start_pos] = piece_to_move, nil
     piece_to_move.pos = end_pos
-
   end
 
 
