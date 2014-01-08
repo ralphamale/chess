@@ -24,7 +24,7 @@ class Game
 
         begin
           current_player = self.players[self.turn]
-          start_pos, end_pos = current_player.play_turn
+          start_pos, end_pos = current_player.play_turn(@board)
           @board.move(start_pos, end_pos)
 
         rescue ArgumentError => e # ArgumentError lives in @board.move
@@ -56,12 +56,14 @@ class HumanPlayer
     @color = color
   end
 
-  def play_turn # possibly break out into move_from and move_to methods
+  def play_turn(board) # possibly break out into move_from and move_to methods
     puts "#{self.name}, it is your turn."
     puts "Which piece do you want to move? Choose the coordinate"
     puts "in the following format: A4, E8, etc"
     start_pos = gets.chomp.split("")
     piece_origin = convert_entry(start_pos)
+
+    board.mid_move_display(piece_origin)
 
     # message stating which piece you chose from what coordinates
     puts "You chose your piece at #{start_pos.join("").upcase}."

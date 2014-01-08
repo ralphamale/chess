@@ -1,4 +1,3 @@
-require 'colorize'
 ROWS = 8
 
 class Board
@@ -31,20 +30,6 @@ class Board
     end
   end
 
-  # Helper method Ralph made last night
-  # def countPiecesOnBoard
-  #   flattened_board = @board.flatten
-  #   whites = []
-  #   blacks = []
-  #
-  #   flattened_board.each_with_index do |piece, i|
-  #     next if piece.nil?      #
-  #     whites << flattened_board[i] if piece.color == :w
-  #     blacks << flattened_board[i] if piece.color != :b
-  #   end
-  # end
-
-
   def [](pos)
     row, col = pos
     @board[row][col]
@@ -58,12 +43,44 @@ class Board
 
   # incorporate colorize/unicode
   def display
-    @board.map do |row|
-      row.map do |piece|
-        piece.nil? ? " " : piece.display_token
-      end.join("|")
-    end.join("\n")
+    @board.each_with_index do |row, row_index|
+      row_index.even? ? switch = true : switch = false
+
+      row.each_with_index do |col, col_index|
+        switch ? color = :white : color = :light_black
+        if col.nil?
+          print " ".colorize(:background => color)
+        else
+          print col.display_token.colorize(:background => color)
+        end
+        switch = !switch
+      end.join(" ")
+      puts
+    end
+    nil
   end
+
+  def mid_move_display(peice_origin)
+    @board.each_with_index do |row, row_index|
+      row_index.even? ? switch = true : switch = false
+
+      row.each_with_index do |col, col_index|
+        switch ? color = :white : color = :light_black
+        if col.nil?
+          print " ".colorize(:background => color)
+        elsif col.pos == peice_origin
+          print col.display_token.colorize(:background => color).blink
+        else
+          print col.display_token.colorize(:background => color)
+        end
+        switch = !switch
+      end.join(" ")
+      puts
+    end
+    nil
+  end
+
+
 
   def in_check?(color)
     flattened_board = @board.flatten
@@ -134,5 +151,7 @@ class Board
     self[end_pos], self[start_pos] = piece_to_move, nil
     piece_to_move.pos = end_pos
   end
+
+
 
 end
