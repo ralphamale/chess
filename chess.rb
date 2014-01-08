@@ -17,14 +17,14 @@ class Game
   end
 
   def play
-
     loop do
+
       display_board
 
-      current_player = self.players[self.turn]
-      start_pos, end_pos = current_player.play_turn
-      @board.move(start_pos, end_pos)
-      @turn = ((self.turn == :w) ? :b : :w)
+        current_player = self.players[self.turn]
+        start_pos, end_pos = current_player.play_turn
+        @board.move(start_pos, end_pos)
+        @turn = ((self.turn == :w) ? :b : :w)
 
       break if @board.checkmate?(@turn)
     end
