@@ -21,17 +21,19 @@ class Game
 
       display_board
 
-        # begin
+        begin
 
 
 
         current_player = self.players[self.turn]
         start_pos, end_pos = current_player.play_turn
         @board.move(start_pos, end_pos)
-        # rescue ArgumentError => e    ArgumentError lives in Board.move
-        # retry
+        rescue ArgumentError => e
+          puts "Error was: #{e.message}"
+          puts "Please try again"
+          retry
 
-        # end
+        end
         @turn = ((self.turn == :w) ? :b : :w)
 
       break if @board.checkmate?(@turn)
