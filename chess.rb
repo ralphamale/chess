@@ -56,10 +56,17 @@ class HumanPlayer
   end
 
   def play_turn # possibly break out into move_from and move_to methods
-    puts "Where do you want to move? Input example: B2,C4"
-    start_pos, end_pos = gets.chomp.split(",")
+    puts "Which piece do you want to move? Choose the coordinate"
+    puts "in the following format: A4, E8, etc"
+    start_pos = gets.chomp.split("")
+    piece_origin = convert_entry(start_pos)
 
-    [convert_entry(start_pos), convert_entry(end_pos)]
+    puts "Which piece do you want to move? Choose the coordinate"
+    puts "in the following format: A4, E8, etc"
+    end_pos = gets.chomp.split("")
+    destination = convert_entry(end_pos)
+
+    [piece_origin, destination]
   end
 
   def convert_entry(pos)
