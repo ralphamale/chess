@@ -50,19 +50,23 @@ end
 
 class HumanPlayer
   attr_reader :name
+
   def initialize(name, color)
     @name = name
     @color = color
   end
 
   def play_turn # possibly break out into move_from and move_to methods
+    puts "#{self.name}, it is your turn."
     puts "Which piece do you want to move? Choose the coordinate"
     puts "in the following format: A4, E8, etc"
     start_pos = gets.chomp.split("")
     piece_origin = convert_entry(start_pos)
 
-    puts "Which piece do you want to move? Choose the coordinate"
-    puts "in the following format: A4, E8, etc"
+    # message stating which piece you chose from what coordinates
+    puts "You chose your piece at #{start_pos.join("").upcase}."
+    puts
+    puts "Where do you want to move?"
     end_pos = gets.chomp.split("")
     destination = convert_entry(end_pos)
 

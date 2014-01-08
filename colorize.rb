@@ -8,10 +8,11 @@ board = Array.new(8) do |row|
 end
 
 
-@board =  board.map do |row|
-  row.map do |col|
-    col.colorize(:red)
-  end.join("   ")
+puts board.each_with_index do |row|
+  p
+  row.each_with_index do |col|
+    if board[row].
+  end.join("")
 end.join("\n")
 
 puts @board
