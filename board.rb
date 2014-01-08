@@ -1,3 +1,4 @@
+require 'colorize'
 ROWS = 8
 
 class Board
@@ -60,7 +61,7 @@ class Board
     @board.map do |row|
       row.map do |piece|
         piece.nil? ? " " : piece.display_token
-      end.join(" | ")
+      end.join("|")
     end.join("\n")
   end
 
@@ -133,7 +134,5 @@ class Board
     self[end_pos], self[start_pos] = piece_to_move, nil
     piece_to_move.pos = end_pos
   end
-
-
 
 end
